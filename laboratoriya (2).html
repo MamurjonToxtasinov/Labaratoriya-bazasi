@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labaratoriya — O'lchash Vositalari Ro'yxati</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --accent: #f0b429;
+    --accent2: #e85d04;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --green: #3fb950;
+    --red: #f85149;
+    --blue: #58a6ff;
+    --radius: 8px;
+    --font: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── GRID BACKGROUND ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(240,180,41,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240,180,41,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 64px;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--text2); }
+
+  nav {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: none;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { color: var(--text); background: var(--bg3); border-color: var(--border); }
+  .nav-btn.active { color: var(--accent); background: rgba(240,180,41,0.08); border-color: rgba(240,180,41,0.3); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+
+  .role-badge {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(240,180,41,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(240,180,41,0.25);
+  }
+  .role-badge.observer { background: rgba(88,166,255,0.1); color: var(--blue); border-color: rgba(88,166,255,0.25); }
+
+  .btn-login, .btn-logout {
+    font-family: var(--font);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text);
+    transition: all 0.18s;
+  }
+  .btn-login:hover, .btn-logout:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── MAIN ─── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ─── PAGE SECTIONS ─── */
+  .page { display: none; animation: fadeIn 0.25s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── SECTION TITLE ─── */
+  .section-title {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    font-size: 0.875rem;
+    color: var(--text2);
+    margin-bottom: 32px;
+  }
+
+  /* ─── FORM ─── */
+  .form-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 680px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-card { padding: 20px; }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  input, select, textarea {
+    font-family: var(--font);
+    font-size: 0.9rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 10px 14px;
+    transition: all 0.18s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(240,180,41,0.1);
+  }
+  input::placeholder, textarea::placeholder { color: var(--text2); }
+
+  select option { background: var(--bg3); }
+
+  .result-select {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .result-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg3);
+    color: var(--text2);
+    font-family: var(--font);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+  }
+  .result-btn:hover { border-color: var(--accent); }
+  .result-btn.selected-yaroqli { background: rgba(63,185,80,0.12); color: var(--green); border-color: var(--green); }
+  .result-btn.selected-nosoz { background: rgba(248,81,73,0.12); color: var(--red); border-color: var(--red); }
+
+  .btn-save {
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 12px 28px;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-top: 8px;
+  }
+  .btn-save:hover { background: #f5c842; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(240,180,41,0.3); }
+  .btn-save:active { transform: none; }
+
+  .xabar-row { display: none; }
+  .xabar-row.show { display: flex; }
+
+  /* ─── LIST PAGE ─── */
+  .list-toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.18s;
+  }
+  .search-box:focus-within { border-color: var(--accent); }
+
+  .search-icon {
+    padding: 10px 12px;
+    color: var(--text2);
+    font-size: 1rem;
+  }
+
+  .search-box input {
+    background: none;
+    border: none;
+    flex: 1;
+    padding: 10px 12px 10px 4px;
+  }
+  .search-box input:focus { box-shadow: none; }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .stat-chip {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2);
+  }
+  .stat-chip b { color: var(--text); }
+
+  /* ─── TABLE ─── */
+  .table-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 600px;
+  }
+
+  thead tr {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(240,180,41,0.04); }
+
+  td {
+    padding: 14px 16px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  .td-name { font-weight: 500; }
+  .td-serial { font-family: var(--mono); font-size: 0.8rem; color: var(--text2); }
+  .td-date { font-family: var(--mono); font-size: 0.82rem; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .badge-yaroqli { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .badge-nosoz { background: rgba(248,81,73,0.12); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .badge::before { content: '●'; font-size: 0.55rem; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+  .empty-state .big { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* ─── DETAIL PAGE ─── */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--text2);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 24px;
+    transition: color 0.18s;
+    font-family: var(--font);
+  }
+  .back-btn:hover { color: var(--accent); }
+
+  .detail-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 700px;
+  }
+
+  .detail-header {
+    padding: 24px 28px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .detail-title {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .detail-serial {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text2);
+  }
+
+  .detail-body {
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 560px) {
+    .detail-body { grid-template-columns: 1fr; padding: 18px; }
+    .detail-header { padding: 18px; }
+  }
+
+  .detail-field label {
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.07em;
+    color: var(--text2);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .detail-field .val {
+    font-size: 0.92rem;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
+  .detail-field.full { grid-column: 1 / -1; }
+
+  .detail-actions {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-qr {
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 10px 18px;
+    background: rgba(88,166,255,0.1);
+    color: var(--blue);
+    border: 1px solid rgba(88,166,255,0.3);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-qr:hover { background: rgba(88,166,255,0.18); }
+
+  .btn-delete {
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 10px 18px;
+    background: rgba(248,81,73,0.08);
+    color: var(--red);
+    border: 1px solid rgba(248,81,73,0.25);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-delete:hover { background: rgba(248,81,73,0.16); }
+
+  /* ─── QR MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+
+  .modal-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-title {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-bottom: 24px;
+  }
+
+  #qr-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  #qr-container canvas, #qr-container img {
+    border: 6px solid white;
+    border-radius: 8px;
+  }
+
+  .modal-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .btn-print {
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-print:hover { background: #f5c842; }
+
+  .btn-close-modal {
+    font-family: var(--font);
+    font-size: 0.875rem;
+    padding: 10px 20px;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-close-modal:hover { color: var(--text); border-color: var(--text2); }
+
+  /* ─── LOGIN MODAL ─── */
+  .login-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .login-overlay.show { display: flex; animation: fadeIn 0.2s; }
+
+  .login-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 360px;
+    width: 100%;
+  }
+
+  .login-title {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .login-sub {
+    font-size: 0.82rem;
+    color: var(--text2);
+    margin-bottom: 28px;
+  }
+
+  .login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .btn-do-login {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 12px;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-top: 8px;
+  }
+  .btn-do-login:hover { background: #f5c842; }
+
+  .login-error {
+    font-size: 0.82rem;
+    color: var(--red);
+    margin-top: 10px;
+    display: none;
+  }
+
+  .btn-cancel-login {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 0.82rem;
+    padding: 9px;
+    background: none;
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.18s;
+  }
+  .btn-cancel-login:hover { color: var(--text); border-color: var(--text2); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    z-index: 2000;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.175,.885,.32,1.275);
+    max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { border-left-color: var(--red); }
+
+  /* ─── PRINT STYLES ─── */
+  @media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  #print-area { display: none; }
+
+  /* ─── OBSERVER NOTICE ─── */
+  .observer-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text2);
+    background: rgba(88,166,255,0.06);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    margin-bottom: 20px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 480px) {
+    main { padding: 20px 16px 60px; }
+    header { padding: 0 16px; }
+    .logo { font-size: 0.9rem; }
+    nav .nav-btn { font-size: 0.8rem; padding: 7px 12px; }
+    table { min-width: 480px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">LAB<span>.</span>METR</div>
+    <nav>
+      <button class="nav-btn active" onclick="showPage('list')">📋 Ro'yxat</button>
+      <button class="nav-btn" id="nav-add" onclick="checkAdminForAdd()">➕ Yangi qo'shish</button>
+    </nav>
+    <div class="header-right">
+      <span class="role-badge observer" id="role-badge">👁 Kuzatuvchi</span>
+      <button class="btn-login" id="btn-login-top" onclick="openLogin()">Admin kirish</button>
+      <button class="btn-logout" id="btn-logout-top" style="display:none" onclick="logout()">Chiqish</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ─── LIST PAGE ─── -->
+  <div class="page active" id="page-list">
+    <div class="section-title">O'lchash Vositalari Ro'yxati</div>
+    <div class="section-sub">Kalibrlash sanasiga qarab eng yangi o'lchaov vositalar yuqorida turadi</div>
+
+    <div class="list-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Nom yoki zavod raqami bo'yicha qidirish..." oninput="renderList()">
+      </div>
+    </div>
+
+    <div class="stats-row" id="stats-row"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nomi</th>
+            <th>Zavod raqami</th>
+            <th>Kalibrlash sanasi</th>
+            <th>Keyingi kalibrlash</th>
+            <th>Natija</th>
+          </tr>
+        </thead>
+        <tbody id="list-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── ADD PAGE ─── -->
+  <div class="page" id="page-add">
+    <div class="section-title">Yangi O'lchash Vositasi Qo'shish</div>
+    <div class="section-sub">Barcha maydonlarni to'ldiring va saqlang</div>
+
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nomi *</label>
+          <input type="text" id="f-nomi" placeholder="masalan: Termostat TM-100">
+        </div>
+        <div class="form-group">
+          <label>Zavod raqami *</label>
+          <input type="text" id="f-serial" placeholder="masalan: ZR-20241105-01">
+        </div>
+        <div class="form-group">
+          <label>Kalibrlash sanasi *</label>
+          <input type="date" id="f-sana">
+        </div>
+        <div class="form-group">
+          <label>Keyingi kalibrlash sanasi *</label>
+          <input type="date" id="f-keyingi">
+        </div>
+        <div class="form-group">
+          <label>Kalibrlash o'tkazgan mutaxasis *</label>
+          <input type="text" id="f-mutaxasis" placeholder="Ism Familiya">
+        </div>
+        <div class="form-group">
+          <label>Natija *</label>
+          <div class="result-select">
+            <button class="result-btn" id="btn-yaroqli" onclick="selectResult('yaroqli')">✅ Yaroqli</button>
+            <button class="result-btn" id="btn-nosoz" onclick="selectResult('nosoz')">❌ Nosoz</button>
+          </div>
+        </div>
+        <div class="form-group full xabar-row" id="xabar-row">
+          <label>Xabarnoma raqami *</label>
+          <input type="text" id="f-xabar" placeholder="masalan: XN-2024-007">
+        </div>
+      </div>
+      <div style="margin-top: 24px; display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="btn-save" onclick="saveItem()">💾 Saqlash</button>
+        <button class="btn-close-modal" style="margin-top:0" onclick="showPage('list')">Bekor qilish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── DETAIL PAGE ─── -->
+  <div class="page" id="page-detail">
+    <button class="back-btn" onclick="showPage('list')">← Ro'yxatga qaytish</button>
+    <div class="detail-card" id="detail-card"></div>
+  </div>
+
+</main>
+
+<!-- ─── QR MODAL ─── -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal-box">
+    <div class="modal-title">📱 QR Kod</div>
+    <div class="modal-sub" id="qr-modal-sub">O'lchash vositasi sahifasiga yo'naltiruvc QR kod</div>
+    <div id="qr-container"></div>
+    <div class="modal-btns">
+      <button class="btn-print" onclick="printQR()">🖨️ Chop etish</button>
+      <button class="btn-close-modal" onclick="closeQR()">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LOGIN MODAL ─── -->
+<div class="login-overlay" id="login-modal">
+  <div class="login-box">
+    <div class="login-title">🔐 Admin Kirish</div>
+    <div class="login-sub">Faqat adminlar o'zgartirish kirita oladi</div>
+    <div class="login-form-group">
+      <label>Login</label>
+      <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="login-form-group">
+      <label>Parol</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="login-error" id="login-error">Login yoki parol noto'g'ri!</div>
+    <button class="btn-do-login" onclick="doLogin()">Kirish</button>
+    <button class="btn-cancel-login" onclick="closeLogin()">Bekor qilish</button>
+  </div>
+</div>
+
+<!-- PRINT AREA -->
+<div id="print-area"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA & STATE ─────────────────────────────────────────────────────────────
+const ADMIN_CREDS  = { login: 'admin', parol: 'admin123' };
+const SB_URL       = 'https://rsoulilpsujserfurlrzp.supabase.co/rest/v1/olchash_vositalari';
+const SB_KEY       = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzb3VsaWxwc3Vqc2VyZnVscnpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0ODg1MTAsImV4cCI6MjA4NzA2NDUxMH0.q1RD6wghenUFiOcycHJ0KMHtF41ujItv5YwaAbTdsAM';
+const SB_HEADERS   = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+
+let isAdmin = false;
+let currentResult = '';
+let currentDetailId = null;
+let instruments = [];
+
+async function loadData() {
+  try {
+    const res = await fetch(SB_URL + '?order=sana.desc', { headers: SB_HEADERS });
+    instruments = res.ok ? await res.json() : [];
+  } catch(e) { instruments = []; }
+}
+
+async function insertItem(item) {
+  try {
+    const res = await fetch(SB_URL, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=representation' },
+      body: JSON.stringify(item)
+    });
+    return res.ok;
+  } catch(e) { return false; }
+}
+
+async function deleteItemFromDB(id) {
+  try {
+    const res = await fetch(SB_URL + '?id=eq.' + id, {
+      method: 'DELETE',
+      headers: SB_HEADERS
+    });
+    return res.ok;
+  } catch(e) { return false; }
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+function openLogin() {
+  document.getElementById('login-modal').classList.add('show');
+  document.getElementById('login-user').focus();
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+function closeLogin() {
+  document.getElementById('login-modal').classList.remove('show');
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if (u === ADMIN_CREDS.login && p === ADMIN_CREDS.parol) {
+    isAdmin = true;
+    closeLogin();
+    updateAuthUI();
+    showToast('✅ Admin sifatida kirdingiz!');
+    showPage('list');
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  updateAuthUI();
+  showPage('list');
+  showToast('👋 Tizimdan chiqdingiz');
+}
+
+function updateAuthUI() {
+  const badge = document.getElementById('role-badge');
+  const btnLogin = document.getElementById('btn-login-top');
+  const btnLogout = document.getElementById('btn-logout-top');
+  if (isAdmin) {
+    badge.textContent = '🔑 Admin';
+    badge.className = 'role-badge';
+    btnLogin.style.display = 'none';
+    btnLogout.style.display = '';
+  } else {
+    badge.textContent = '👁 Kuzatuvchi';
+    badge.className = 'role-badge observer';
+    btnLogin.style.display = '';
+    btnLogout.style.display = 'none';
+  }
+}
+
+function checkAdminForAdd() {
+  if (!isAdmin) { openLogin(); return; }
+  showPage('add');
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+  if (name === 'list') {
+    document.getElementById('page-list').classList.add('active');
+    document.querySelectorAll('.nav-btn')[0].classList.add('active');
+    renderList();
+  } else if (name === 'add') {
+    if (!isAdmin) { openLogin(); return; }
+    document.getElementById('page-add').classList.add('active');
+    document.querySelectorAll('.nav-btn')[1].classList.add('active');
+    resetForm();
+  } else if (name === 'detail') {
+    document.getElementById('page-detail').classList.add('active');
+    renderDetail(currentDetailId);
+  }
+}
+
+// ─── FORM ─────────────────────────────────────────────────────────────────────
+function selectResult(val) {
+  currentResult = val;
+  document.getElementById('btn-yaroqli').className = 'result-btn' + (val === 'yaroqli' ? ' selected-yaroqli' : '');
+  document.getElementById('btn-nosoz').className = 'result-btn' + (val === 'nosoz' ? ' selected-nosoz' : '');
+  const row = document.getElementById('xabar-row');
+  if (val === 'nosoz') row.classList.add('show');
+  else row.classList.remove('show');
+}
+
+function resetForm() {
+  ['f-nomi','f-serial','f-sana','f-keyingi','f-mutaxasis','f-xabar'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  currentResult = '';
+  document.getElementById('btn-yaroqli').className = 'result-btn';
+  document.getElementById('btn-nosoz').className = 'result-btn';
+  document.getElementById('xabar-row').classList.remove('show');
+}
+
+async function saveItem() {
+  const nomi = document.getElementById('f-nomi').value.trim();
+  const serial = document.getElementById('f-serial').value.trim();
+  const sana = document.getElementById('f-sana').value;
+  const keyingi = document.getElementById('f-keyingi').value;
+  const mutaxasis = document.getElementById('f-mutaxasis').value.trim();
+  const xabar = document.getElementById('f-xabar').value.trim();
+
+  if (!nomi || !serial || !sana || !keyingi || !mutaxasis || !currentResult) {
+    showToast('⚠️ Barcha majburiy maydonlarni to\'ldiring!', true); return;
+  }
+  if (currentResult === 'nosoz' && !xabar) {
+    showToast('⚠️ Nosoz holat uchun xabarnoma raqamini kiriting!', true); return;
+  }
+
+  const item = {
+    id: genId(),
+    nomi, serial, sana, keyingi, mutaxasis,
+    natija: currentResult,
+    xabar: currentResult === 'nosoz' ? xabar : '',
+    qoshilgan: new Date().toISOString()
+  };
+
+  showToast('⏳ Saqlanmoqda...');
+  const ok = await insertItem(item);
+  if (ok) {
+    instruments.push(item);
+    showToast('✅ O\'lchash vositasi saqlandi!');
+    showPage('list');
+  } else {
+    showToast('❌ Saqlashda xatolik!', true);
+  }
+}
+
+// ─── LIST ─────────────────────────────────────────────────────────────────────
+function renderList() {
+  const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+
+  let list = [...instruments].sort((a, b) => new Date(b.sana) - new Date(a.sana));
+
+  if (q) {
+    list = list.filter(i =>
+      i.nomi.toLowerCase().includes(q) ||
+      i.serial.toLowerCase().includes(q)
+    );
+  }
+
+  // Stats
+  const total = instruments.length;
+  const yaroqli = instruments.filter(i => i.natija === 'yaroqli').length;
+  const nosoz = instruments.filter(i => i.natija === 'nosoz').length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-chip">Jami: <b>${total}</b></div>
+    <div class="stat-chip">✅ Yaroqli: <b>${yaroqli}</b></div>
+    <div class="stat-chip">❌ Nosoz: <b>${nosoz}</b></div>
+    ${q ? `<div class="stat-chip">🔍 Topildi: <b>${list.length}</b></div>` : ''}
+  `;
+
+  const tbody = document.getElementById('list-tbody');
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6">
+      <div class="empty-state">
+        <div class="big">📭</div>
+        <p>${q ? 'Qidiruv bo\'yicha hech narsa topilmadi' : 'Ro\'yxat hali bo\'sh. Yangi o\'lchash vositasi qo\'shing.'}</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map((item, i) => `
+    <tr onclick="openDetail('${item.id}')">
+      <td><span style="font-family:var(--mono);font-size:0.78rem;color:var(--text2)">${i+1}</span></td>
+      <td class="td-name">${esc(item.nomi)}</td>
+      <td class="td-serial">${esc(item.serial)}</td>
+      <td class="td-date">${formatDate(item.sana)}</td>
+      <td class="td-date">${formatDate(item.keyingi)}</td>
+      <td><span class="badge badge-${item.natija}">${item.natija === 'yaroqli' ? 'Yaroqli' : 'Nosoz'}</span></td>
+    </tr>
+  `).join('');
+}
+
+// ─── DETAIL ───────────────────────────────────────────────────────────────────
+function openDetail(id) {
+  currentDetailId = id;
+  showPage('detail');
+}
+
+function renderDetail(id) {
+  const item = instruments.find(i => i.id === id);
+  if (!item) { showPage('list'); return; }
+
+  const card = document.getElementById('detail-card');
+  const currentURL = window.location.href.split('#')[0] + '#detail:' + id;
+
+  card.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <div class="detail-title">${esc(item.nomi)}</div>
+        <div class="detail-serial">Zavod raqami: ${esc(item.serial)}</div>
+      </div>
+      <span class="badge badge-${item.natija}" style="font-size:0.82rem;padding:6px 14px;">
+        ${item.natija === 'yaroqli' ? '✅ Yaroqli' : '❌ Nosoz'}
+      </span>
+    </div>
+    <div class="detail-body">
+      <div class="detail-field">
+        <label>Kalibrlash sanasi</label>
+        <div class="val">${formatDate(item.sana)}</div>
+      </div>
+      <div class="detail-field">
+        <label>Keyingi kalibrlash</label>
+        <div class="val">${formatDate(item.keyingi)}</div>
+      </div>
+      <div class="detail-field full">
+        <label>Mutaxasis</label>
+        <div class="val">${esc(item.mutaxasis)}</div>
+      </div>
+      ${item.natija === 'nosoz' ? `
+      <div class="detail-field full">
+        <label>Xabarnoma raqami</label>
+        <div class="val" style="color:var(--red)">${esc(item.xabar)}</div>
+      </div>` : ''}
+    </div>
+    <div class="detail-actions">
+      <button class="btn-qr" onclick="openQR('${id}')">📱 QR Kod</button>
+      ${isAdmin ? `<button class="btn-delete" onclick="deleteItem('${id}')">🗑️ O'chirish</button>` : ''}
+    </div>
+    ${!isAdmin ? `<div style="padding:0 28px 18px"><div class="observer-notice">👁 Kuzatuvchi sifatida faqat ko'rish imkoniyatingiz bor</div></div>` : ''}
+  `;
+}
+
+async function deleteItem(id) {
+  if (!isAdmin) { showToast('⛔ Ruxsat yo\'q!', true); return; }
+  if (!confirm('Haqiqatan ham bu o\'lchash vositasini o\'chirmoqchimisiz?')) return;
+  showToast('⏳ O\'chirilmoqda...');
+  const ok2 = await deleteItemFromDB(id);
+  if (ok2) {
+    instruments = instruments.filter(i => i.id !== id);
+    showToast('🗑️ O\'lchash vositasi o\'chirildi');
+    showPage('list');
+  } else {
+    showToast('❌ O\'chirishda xatolik!', true);
+  }
+}
+
+// ─── QR CODE ──────────────────────────────────────────────────────────────────
+// QR kod ichiga ma'lumotlarni to'g'ridan-to'g'ri joylashtiramiz.
+// Skanerlanganda telefon brauzerida data: URL orqali HTML sahifa ochiladi.
+let currentQRItem = null;
+
+function openQR(id) {
+  const item = instruments.find(i => i.id === id);
+  if (!item) return;
+  currentQRItem = item;
+
+  const modal = document.getElementById('qr-modal');
+  document.getElementById('qr-modal-sub').textContent = item.nomi + ' — ' + item.serial;
+
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '';
+
+  // GitHub Pages manzili - faqat o'sha o'lchash vositasining sahifasiga yo'naltiradi
+  const baseURL = window.location.href.includes('github.io')
+    ? 'https://mamurjontoxtasinov.github.io/Labaratoriya-bazasi/laboratoriya.html'
+    : window.location.origin + window.location.pathname;
+  const qrURL = baseURL.split('#')[0] + '#detail:' + id;
+
+  new QRCode(container, {
+    text: qrURL,
+    width: 220,
+    height: 220,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  modal.classList.add('show');
+}
+
+function closeQR() {
+  document.getElementById('qr-modal').classList.remove('show');
+  currentQRItem = null;
+}
+
+function printQR() {
+  if (!currentQRItem) return;
+  const container = document.getElementById('qr-container');
+  const canvas = container.querySelector('canvas');
+  const img = container.querySelector('img');
+  let src = '';
+  if (canvas) src = canvas.toDataURL();
+  else if (img) src = img.src;
+
+  const printArea = document.getElementById('print-area');
+  printArea.innerHTML = `
+    <div style="text-align:center;font-family:Arial,sans-serif;padding:30px">
+      <div style="font-size:14px;font-weight:bold;margin-bottom:4px">${currentQRItem.nomi}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:14px">Zavod raqami: ${currentQRItem.serial}</div>
+      ${src ? `<img src="${src}" style="width:180px;height:180px;border:4px solid #000;border-radius:6px">` : ''}
+      <div style="font-size:10px;color:#888;margin-top:10px">Kalibrlash: ${formatDate(currentQRItem.sana)}</div>
+    </div>
+  `;
+  printArea.style.display = 'block';
+  window.print();
+  setTimeout(() => { printArea.style.display = 'none'; }, 500);
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function formatDate(d) {
+  if (!d) return '—';
+  try {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('uz-UZ', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  } catch(e) { return d; }
+}
+
+function esc(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '') + ' show';
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ─── DEEP LINK VIA HASH ───────────────────────────────────────────────────────
+function checkDeepLink() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#detail:')) {
+    const id = hash.slice(8);
+    const item = instruments.find(i => i.id === id);
+    if (item) {
+      currentDetailId = id;
+      showPage('detail');
+    }
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(async () => {
+  await loadData();
+  renderList();
+  checkDeepLink();
+})();
+</script>
+</body>
+</html>
